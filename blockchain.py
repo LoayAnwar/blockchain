@@ -29,9 +29,10 @@ class Blockchain:
     def last_block(self):
         return self.chain[-1]
 
-    difficulty = 2
+    difficulty = 4
     def proof_of_work(self, block):
-        block.nonce = computed_hash = block.compute_hash()
+        block.nonce =0
+        computed_hash = block.compute_hash()
         while not computed_hash.startswith('0' * Blockchain.difficulty):
             block.nonce += 1
             computed_hash = block.compute_hash()
@@ -69,3 +70,14 @@ class Blockchain:
         self.add_block(new_block, proof)
         self.unconfirmed_transactions = []
         return new_block.index
+
+
+
+blockchain = Blockchain()
+
+
+while True:
+    for i in range(100):
+        blockchain.add_new_transaction(i)
+    block_index = blockchain.mine()
+
