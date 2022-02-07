@@ -1,3 +1,4 @@
+from enum import Flag
 from hashlib import sha256
 import json
 import time
@@ -88,6 +89,7 @@ class thread(threading.Thread):
         threading.Thread.__init__(self)
         self.thread_ID = thread_ID
         self.blockchain_local = copy.deepcopy(blockchain)
+        self.flag =False
         
     def run(self):
         while True:
@@ -96,7 +98,10 @@ class thread(threading.Thread):
             for i in range(100):
                 self.blockchain_local.add_new_transaction(i)
             if( self.thread_ID== 2):
-                time.sleep(1)
+                time.sleep(2)
+            elif self.flag ==False and self.thread_ID ==1:
+                self.blockchain_local.chain.pop()
+                self.flag =True
             self.blockchain_local.mine()
             change_block(self.blockchain_local,self.thread_ID)
         
@@ -107,4 +112,3 @@ thread2 = thread(2)
  
 thread1.start()
 thread2.start()
- 
