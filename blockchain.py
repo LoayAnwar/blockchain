@@ -1,7 +1,8 @@
 from hashlib import sha256
 import json
 import time
-
+import threading
+import copy
 class Block:
     def __init__(self, index, transactions, timestamp, previous_hash, nonce=0):
         self.index = index
@@ -75,9 +76,35 @@ class Blockchain:
 
 blockchain = Blockchain()
 
+def change_block(bc,id):
+    global blockchain 
+    if(len(blockchain.chain)+4<len(bc.chain)):
+        blockchain= copy.deepcopy(bc)
+        print(len(bc.chain) ,id)
 
-while True:
-    for i in range(100):
-        blockchain.add_new_transaction(i)
-    block_index = blockchain.mine()
+    
+class thread(threading.Thread):
+    def __init__(self, thread_ID):
+        threading.Thread.__init__(self)
+        self.thread_ID = thread_ID
+        self.blockchain_local = copy.deepcopy(blockchain)
+        
+    def run(self):
+        while True:
+            if len(blockchain.chain)> len(self.blockchain_local.chain):
+                self.blockchain_local =copy.deepcopy(blockchain)
+            for i in range(100):
+                self.blockchain_local.add_new_transaction(i)
+            if( self.thread_ID== 2):
+                time.sleep(1)
+            self.blockchain_local.mine()
+            change_block(self.blockchain_local,self.thread_ID)
+        
 
+
+thread1 = thread(1)
+thread2 = thread(2)
+ 
+thread1.start()
+thread2.start()
+ 
