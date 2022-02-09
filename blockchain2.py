@@ -114,6 +114,11 @@ while True:
     else:
         blockchain_honest.mine(honest_speed)
         blockchain_attacker.mine(attack_speed)
+    
+    if blockchain_honest.get_length() - blockchain_attacker.get_length() >= 5:
+        print("Attack Failed (Honest chain is 5 blocks longer than the attacker chain).")
+        break
+
 
     if blockchain_attacker.get_length() - blockchain_honest.get_length() >= 5:
         print("Attack succeeded with computing power", attack_speed, "%")
